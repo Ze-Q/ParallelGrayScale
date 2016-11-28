@@ -305,6 +305,7 @@
 				AA8646D91DEABFBE0029636B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
