@@ -16,18 +16,16 @@ class ViewController: UIViewController {
     
 
     
-    func update(start: Int, end: Int, tag: String, inout image: RGBAImage, completion: (() -> Void)!) {
+    func update(start: Int, end: Int, tag: String, image: RGBAImage, inout pixels: [Pixel], completion: (() -> Void)!) {
         for y in start..<end {
-            for x in 0..<image.width {
-                let index = y*image.width+x
-                var pixel = image.pixels[index]
+                var pixel = image.pixels[y]
                 let average = UInt8((Int(pixel.red) + Int(pixel.green) + Int(pixel.blue))/3)
                 pixel.red = average
                 pixel.green = average
                 pixel.blue = average
-                image.pixels[index] = pixel
+                pixels.append(pixel)
             }
-        }
+
         completion()
     }
     
@@ -43,34 +41,64 @@ class ViewController: UIViewController {
     
     @IBAction func onConvertButtonPressed(sender: UIButton) {
         var imageToProcess = RGBAImage(image: image!)!
-        var imageToProcess2 = RGBAImage(image: image!)!
-        imageToProcess.pixels = Array(imageToProcess.pixels.dropLast(imageToProcess.height*imageToProcess.width/2))
-        imageToProcess2.pixels = Array(imageToProcess2.pixels.dropFirst(imageToProcess.height*imageToProcess.width/2))
         let timeAtPress = NSDate()
+        var pixel1 = [Pixel]()
+        var pixel2 = [Pixel]()
+        var pixel3 = [Pixel]()
+        var pixel4 = [Pixel]()
         let queue = dispatch_queue_create("cqueue.hoffman.jon", DISPATCH_QUEUE_CONCURRENT)
         var count = 0
-        var count1 = 0
+        /*
+        dispatch_apply(imageToProcess.pixels.count, queue) {
+            (i: Int) -> Void in
+                var pixel = imageToProcess.pixels[i]
+                let average = UInt8((Int(pixel.red) + Int(pixel.green) + Int(pixel.blue))/3)
+                pixel.red = average
+                pixel.green = average
+                pixel.blue = average
+                imageToProcess.pixels[i] = pixel
+        }
+        */
+        
+        let slice = imageToProcess.pixels.count/4
         dispatch_async (queue) {
-            self.update(0, end: imageToProcess.height, tag: "async0", image: &imageToProcess, completion: {
-                count = 1
+            self.update(0, end: slice, tag: "async0", image: imageToProcess, pixels: &pixel1, completion: {
+                count += 1
             })
 
         }
  
         
         dispatch_async(queue) {
-            self.update(0, end: imageToProcess2.height, tag: "async1", image: &imageToProcess2, completion: {
-                count1 = 1
+            self.update(slice, end: slice*2, tag: "async1", image: imageToProcess, pixels: &pixel2, completion: {
+                count += 1
+            })
+        }
+        
+        dispatch_async(queue) {
+            self.update(slice*2, end: slice*3, tag: "async2", image: imageToProcess, pixels: &pixel3, completion: {
+                count += 1
+            })
+        }
+        
+        dispatch_async(queue) {
+            self.update(slice*3, end: imageToProcess.pixels.count, tag: "async3", image: imageToProcess, pixels: &pixel4, completion: {
+                count += 1
             })
         }
         
 
 
-        while((count+count1) < 2) {
+        while((count) < 4) {
             
         }
- 
-        imageToProcess.pixels.appendContentsOf(imageToProcess2.pixels)
+        
+        
+        imageToProcess.pixels.removeAll(keepCapacity: true)
+        imageToProcess.pixels.appendContentsOf(pixel1)
+        imageToProcess.pixels.appendContentsOf(pixel2)
+        imageToProcess.pixels.appendContentsOf(pixel3)
+        imageToProcess.pixels.appendContentsOf(pixel4)
         let result = imageToProcess.toUIImage()
         let elapsed = NSDate().timeIntervalSinceDate(timeAtPress)
         resultText.text = (String(format:"%f", elapsed))
