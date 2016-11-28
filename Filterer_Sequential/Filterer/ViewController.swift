@@ -12,7 +12,7 @@ class ViewController: UIViewController {
     @IBOutlet var imageView: UIImageView!
     @IBOutlet var convertButton: UIButton!
     @IBOutlet var resultText: UITextField!
-    let image = UIImage(named: "test")
+    let image = UIImage(named: "90")
     
     @IBAction func onConvertButtonPressed(sender: UIButton) {
         var imageToProcess = RGBAImage(image: image!)!
