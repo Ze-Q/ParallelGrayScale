@@ -1,4 +1,3 @@
-/* Example of using lodepng to load, process, save image */
 #include "lodepng.h"
 #include <stdio.h>
 #include <stdlib.h>
