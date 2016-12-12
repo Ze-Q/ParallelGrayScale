@@ -15,3 +15,5 @@ To resolve the problem statement, the team developed five versions of a grayscal
 
 
 ## Notes
+1. In the mobile sequential and parallel versions, the helper class called “RGBAImage” was obtained from the [Coursera iOS course](https://www.coursera.org/specializations/app-development).
+2. For the Metal version, we referred to [this tutorial](https://www.invasivecode.com/weblog/metal-image-processing) to set up the API.
