@@ -12,8 +12,8 @@ class ViewController: UIViewController {
     @IBOutlet var imageView: UIImageView!
     @IBOutlet var convertButton: UIButton!
     @IBOutlet var resultText: UITextField!
-    let image = UIImage(named: "test")
     
+    let image = UIImage(named: "test")
 
     
     func update(start: Int, end: Int, tag: String, image: RGBAImage, inout pixels: [Pixel], completion: (() -> Void)!) {
@@ -46,19 +46,8 @@ class ViewController: UIViewController {
         var pixel2 = [Pixel]()
         var pixel3 = [Pixel]()
         var pixel4 = [Pixel]()
-        let queue = dispatch_queue_create("cqueue.hoffman.jon", DISPATCH_QUEUE_CONCURRENT)
+        let queue = dispatch_queue_create("com.zexception.queue", DISPATCH_QUEUE_CONCURRENT)
         var count = 0
-        /*
-        dispatch_apply(imageToProcess.pixels.count, queue) {
-            (i: Int) -> Void in
-                var pixel = imageToProcess.pixels[i]
-                let average = UInt8((Int(pixel.red) + Int(pixel.green) + Int(pixel.blue))/3)
-                pixel.red = average
-                pixel.green = average
-                pixel.blue = average
-                imageToProcess.pixels[i] = pixel
-        }
-        */
         
         let slice = imageToProcess.pixels.count/4
         dispatch_async (queue) {
@@ -87,12 +76,10 @@ class ViewController: UIViewController {
             })
         }
         
-
-
+        // wait until all 4 threads finish
         while((count) < 4) {
             
         }
-        
         
         imageToProcess.pixels.removeAll(keepCapacity: true)
         imageToProcess.pixels.appendContentsOf(pixel1)
